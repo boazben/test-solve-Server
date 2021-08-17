@@ -8,7 +8,7 @@ module.exports = function Router(server){
 
 
     server.get('/name', (req, res) => {
-        res.send(`name: ${process.env.NAME_BOAZ1}`)
+        res.send(`name: ${process.env.PORT}`)
     })
  
 
