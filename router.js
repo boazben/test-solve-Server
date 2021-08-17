@@ -5,6 +5,11 @@ const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser } = re
 
 
 module.exports = function Router(server){
+
+
+    server.get('/name', (req, res) => {
+        res.send(`name: ${process.env.NAME_BOAZ1}`)
+    })
  
 
     // Login With Token:
