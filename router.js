@@ -5,11 +5,6 @@ const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser } = re
 
 
 module.exports = function Router(server){
-
-
-    server.get('/name', (req, res) => {
-        res.send(`name: ${process.env.PORT}`)
-    })
  
 
     // Login With Token:
