@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken')
 const UserController = require('./user')
 const TestDetails = require('./testPlacement')
 const QuestionController = require('./question')
+const QuestionModel = require('../models/question')
+const TestPlacementModle = require('../models/testPlacement')
 const Test = require('./test')
 
 async function checkToken(token) {
@@ -27,46 +29,35 @@ async function createTestDeatelsForLink(user_id, test_id, timeForTest) {
 }
 exports.createTestDeatelsForLink = createTestDeatelsForLink
 
-async function createObjectOfTest(test_id, testDetails_id) {
-    //TODO
-    const test = await Test.readOne({_id: test_id});
-    // test = {...test}
-    // test = test._doc
-    const testDetails = await TestDetails.readOne({_id: testDetails_id})
-    // testDetails = {...testDetails}
-    // testDetails = testDetails._doc
-    const questens = await QuestionController.read({test_id: test._id, active: true})
-    // questens = {...questens}
-    // questens = questens._doc
-    // return {...test, ...testDetails, ...questens}
+
+async function createObjectOfTest(testDetails_id, answersCorecct=false) {
+    const res = await TestPlacementModle.findOne({_id: testDetails_id})
+        .populate('test')
+        .populate({ path: 'test', populate: { path: 'creator' } })
     
-    return {
-        test_id: test._id,
-        name: test.name,
-        titel: test.titel,
-        creator_id: test.creator_id,
-        typeForm: test.typeForm,
-        testDetails: testDetails._id,
-        responds: testDetails.user_id,
-        startDate: testDetails.startDate,
-        endDate: testDetails.endDate,
-        questens: questens.map(question => {
-            return {
-                _id: question._id,
-                titel: question.titel,
-                description: question.description,
-                type: question.type,
-                required: question.required,
-                score: question.score,
-                answers: question.answers.map(answer =>{
-                    return{answer_text: answer.text}
-                }
-                )
-
-            }
-        }),
-        answers: testDetails.answers
-
+    if (answersCorecct) {
+        const questions = await QuestionModel.find({test: res.test._id, active: true})
+            .select({'+answers.correct': 1})
+        res._doc.questens = questions
+    } else {
+        const questions = await QuestionController.read({test: res.test._id, active: true})
+        res._doc.questens = questions
     }
+    return res
 }
 exports.createObjectOfTest = createObjectOfTest
+
+exports.msToHours = duration => {
+
+      seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  
+    hours = (hours < 10) ? "0" + hours : hours;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+    seconds = (seconds < 10) ? "0" + seconds : seconds;
+    
+    if (hours || minutes || seconds) return hours + ":" + minutes + ":" + seconds
+    return '00:00:00'
+    
+  }

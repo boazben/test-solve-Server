@@ -12,7 +12,7 @@ exports.read = read
 
 async function readOne(filter) {
     return await TestPlacement.findOne(filter)
-}
+}  
 exports.readOne = readOne
 
 async function update(_id, newData) {
