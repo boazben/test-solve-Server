@@ -27,7 +27,7 @@ connect().
         //     {
 
             //         name: 'מבחן חדש לבחינה',
-        //         titel: 'באימון חטיבתי- חוזרים הביתה בשלום',
+        //         title: 'באימון חטיבתי- חוזרים הביתה בשלום',
         //         description: 'למען קידום המטרות נעשה פה תיאור',
         //     }, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMTM1Y2JjOGE3MTk2MjRiNDIwMTRhMiIsImlhdCI6MTYyODY3MzM3NiwiZXhwIjoxNjMxMjY1Mzc2fQ.B1oHm6A2L5cSQp_O5hr3D7a-STcdmfhG51SPEVRaojM'
         
@@ -56,7 +56,7 @@ connect().
         // // New Question:
         // const res = await Question.create({
             
-        //         titel: 'מה בא לי לאכול',
+        //         title: 'מה בא לי לאכול',
         //         description: 'בחר את התשובה הנכונה ביותר',
         //         test_id: '6112748af97a513ed8590e87',
         //         score: 10,
@@ -68,7 +68,7 @@ connect().
             // const res = await Test.create({
                 
                 //     name: 'קבלה לדיור מוגן',
-                //     titel: 'אז מי אתם?',
+                //     title: 'אז מי אתם?',
                 //     description: 'למען קידום המטרות נעשה פה תיאור',
                 //     creator_id: '61126b8e1204f24614b7a920'
                 //     })

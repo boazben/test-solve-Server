@@ -9,7 +9,7 @@ const aswerSchema = new Schema(
 ) 
 
 const Question = new Schema({
-    titel: { type: String, maxLength: 80},
+    title: { type: String, maxLength: 80},
     description: { type: String, maxLength: 80},
     type: { type: String, enum: ['radio', 'checkbox'], default: 'radio' },
     test: { type: String, ref: 'tests' },

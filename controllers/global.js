@@ -9,16 +9,18 @@ const UserController = require('./user')
 const QuestionModel = require('../models/question')
 
 
+
 // Tests:
 async function triningTest(_idTest) {
     const test =
-        TestPlacementModel.findOne({ _id: _idTest }).
-            populate('user_responds', 'fullname').
-            populate({ path: 'test_id', populate: { path: 'creator_id' } }).
-            populate('answers.id_question')
+        await TestPlacementModel.findOne({ test: _idTest })
+        .populate('test')
+        .populate({ path: 'test', populate: { path: 'creator' } })
     return test
 }
 exports.triningTest = triningTest
+
+
 
 async function getTesteds(idTest, token) {
     const user = await checkToken(token)
@@ -203,12 +205,12 @@ async function duplication(_idTest, token) {
     // TODO!
     try {
         const oldTest = await TestController.readOne({ _id: _idTest, active: true})
-        const { name, titel, description, creator_id, typeForm } = oldTest
+        const { name, title, description, creator_id, typeForm } = oldTest
         validateToken(creator_id, token)
         // TODO: copy al lthe questens
         return await TestController.create({
             name: name,
-            titel: titel,
+            title: title,
             description: description,
             creator_id: creator_id,
             typeForm: typeForm,
@@ -295,7 +297,7 @@ async function editTest(token, idTest, newData) {
             break;
 
         case 'Closed':
-            status = deadline ? test.respondents[0] ? 'Started' : 'Distributed' : "null"
+            // status = deadline ? test.respondents[0] ? 'Started' : 'Distributed' : "null"
             // Creat an Array with objectes of all the property i want the be editable:
             const editable = [{ deadline: deadline }, { active: active }, { status: status }]
             // Filter all the property they are ton come from the newData (they 'undefind'):
@@ -436,14 +438,17 @@ async function editQuestion(token, idQuestion, newData) {
             
             // Check if user edit question or answer:
             // If the user want to edit just the question, so edit this:
-            if (!newData.answer) return await QuestionController.update(idTest, newData)
             
+            if (!newData.answer) {
+                return await QuestionController.update(idQuestion, newData)
+            }
             // To edit an answer:
             else if (newData.answer) {
                 // If the user want to edd answer:
                 if (!newData.answer._id) throw 'לא ניתן להוסיף שאלה מכיוון שיש אנשים שהתחילו להשיב על המבחן'
                 // If the user want to edit answer: 
                 else if (newData.answer._id) {
+                console.log(newData.answer);
                 const upDateQuestion = await QuestionModel.findOneAndUpdate(
                     { _id: idQuestion, answers: { $elemMatch: { _id: newData.answer._id } } },
                     {
