@@ -157,7 +157,9 @@ async function submitTest(idTestPlacement, answersObj, token) {
     await questions.map(question => { 
         questionScore(question, answersObj).
         then((score) => { 
+            console.log('grade befor:', grade);
             grade = grade + score
+            console.log('grade after:', grade);
         })
        
     })
@@ -178,6 +180,8 @@ async function submitTest(idTestPlacement, answersObj, token) {
 exports.submitTest = submitTest
 
 async function questionScore(question, responses) {
+    console.log(question);
+    console.log(responses);
     let questionGrade = 0
         const ansAmount = question.answers.length
         const correctAnsAmount = question.answers.filter(answer => answer.correct).length
@@ -188,10 +192,10 @@ async function questionScore(question, responses) {
 
         question.answers.forEach((answer) => {
             if (answer.correct) {
-                if (responses[answer._id]) questionGrade += scoreCorrectAns;
+                if (responses["inp" + answer._id]) questionGrade += scoreCorrectAns;
             }
             else {
-                if (responses[answer._id]) questionGrade -= scoreWorngAns;
+                if (responses["inp" +answer._id]) questionGrade -= scoreWorngAns;
             }
         })
 
