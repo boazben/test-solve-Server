@@ -1,5 +1,5 @@
 const User = require('./controllers/user')
-const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser, triningTest, editTest, createNewQuestion, editQuestion, getTestForm, getQustion, getTesteds, checkAndCreateExamine, getProfile, submitTest } = require('./controllers/global')
+const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser, triningTest, editTest, createNewQuestion, editQuestion, getTestForm, getQustion, getTesteds, checkAndCreateExamine, getProfile, submitTest, getTestToPreview } = require('./controllers/global')
 
 
 
@@ -173,6 +173,19 @@ module.exports = function Router(server){
             res.status(400).send({error: error.message + error.stack || error})
         }
     })
+    
+    // Get a test to preview:
+    server.post('/get_test_preview', async (req, res) => {
+        try {
+            const token = req.headers.authorization
+            const id_test = req.body.id
+            if (!token) throw 'The user not login'
+            const test = await getTestToPreview(id_test ,token)
+            res.send(test)
+        } catch (error) {
+            res.status(400).send({error: error.message + error.stack || error})
+        }
+    })
 
     
     // Submit Test:
@@ -213,6 +226,8 @@ module.exports = function Router(server){
             res.status(400).send({error: error.message + error.stack || error})
         }
     })
+
+    
 
 
         

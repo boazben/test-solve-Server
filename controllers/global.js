@@ -80,6 +80,15 @@ async function getFullTest(_idTest, token) {
     // Find the test and cheack if the test exist:
     const test = await TestController.readOne({_id: _idTest, active: true})
     if (!test || !test.active) throw 'The test not exist or deleted'
+    // If the user is the creator:
+    if (user._id == test.creator) {
+        const testView = await TestModel.findOne({_id: _idTest, active: true})
+        .populate('creator')
+        testView._doc.endDate =  Date.now() + test.timeForTest
+        const questions = await QuestionController.read({test: test._id, active: true})
+        testView._doc.questens = questions
+        return testView
+    }
     // Find test detels and check a few params:
     const testDetails = await TestDetails.readOne({ test: _idTest, user_responds: user.email})
     // Cheack if exist test TestDetails:
@@ -144,6 +153,22 @@ async function getFullTest(_idTest, token) {
 
 }
 exports.getFullTest = getFullTest
+
+async function getTestToPreview(_idTest, token) {
+    // Ceack if the token correct and if the user exist:
+    const user = await checkToken(token)
+    
+    // Find the test and cheack if the test exist:
+    const test = await TestModel.findOne({_id: _idTest, active: true})
+    .populate('creator')
+    if (!test || !test.active) throw 'The test not exist or deleted'
+    // Cheak if this user relly create this test:
+    if (user._id != test.creator) 'Just the creator of this test can to view at the test'
+    test._doc.endDate =  Date.now() + test.timeForTest
+    return test
+
+}
+exports.getTestToPreview = getTestToPreview
 
 
 async function submitTest(idTestPlacement, answersObj, token) {

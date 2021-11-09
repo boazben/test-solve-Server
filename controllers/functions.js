@@ -16,10 +16,10 @@ async function checkToken(token) {
 }
 exports.checkToken = checkToken
 
-async function createTestDeatelsForLink(user_id, test_id, timeForTest) {
+async function createTestDeatelsForLink(user_email, test_id, timeForTest) {
     return await TestDetails.create({
-        user_id: user_id,
-        test_id: test_id,
+        user_responds: user_email,
+        test: test_id,
         typeOfEntrance: 'Link',
         status: 'In Doing',
         startDate: Date.now(),

@@ -17,17 +17,17 @@ async function read(filter, correct=false) {
     }
 
     // Filter all the tests thay not active:
-    questions.forEach((question, index) =>{
-        if (!question.active) questions.splice(index, 1)
-    })
-
+    questions = questions.filter(question => question.active)
+    
     // Return just active answers:
+
     const filterQuestions = questions.map(question => {
-        question.answers.forEach((answer, index) => {
-            if (!answer.active) question.answers.splice(index, 1)
-        })
+        const filterAnswers = question.answers.filter(answer => answer.active)
+        question.answers = filterAnswers
+        console.log(question)
         return question
     })
+
     return filterQuestions
 }
 exports.read = read
