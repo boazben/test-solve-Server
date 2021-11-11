@@ -7,6 +7,7 @@ const TestDetails = require('./testPlacement')
 const QuestionController = require('./question')
 const UserController = require('./user')
 const QuestionModel = require('../models/question')
+const UserModel = require('../models/user')
 
 
 
@@ -23,12 +24,18 @@ exports.triningTest = triningTest
 
 
 async function getTesteds(idTest, token) {
+    console.log(idTest);
     const user = await checkToken(token)
-    const test =  await TestController.readOne({_id: idTest})
+    const test =  await TestController.readOne({"_id": idTest})
+    if (!test) throw 'המבחן לא נמצא במערכת'
     if (test.creator != user._id) throw 'אין הרשאת גישה לנתונים'
-    const testeds = await TestDetails.read({test: test._id})
+    const testeds = await TestPlacementModel.find({"test": test._id})
+    for (let tested of testeds) {
+        const response = await UserController.readOne({"email": tested.user_responds})
+        if (response) {tested._doc.user_responds = response}
+        console.log(tested); 
+    }
     return testeds
-    // TODO : CHECKING
 }
 exports.getTesteds = getTesteds
 
@@ -260,7 +267,7 @@ async function getAllTests(token) {
         .populate('test')
         .populate({ path: 'test', populate: { path: 'creator' } })
     tests = tests.map((test) => {
-        if (test.test.active) return test
+        if (test?.test?.active) return test
     })
     tests = tests.filter(item => item)
     return tests
