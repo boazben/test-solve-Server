@@ -3,6 +3,7 @@ const User = require('../models/user')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { createToken, validateToken } = require('../jwt')
+const { creatrExempailTest } = require('./functions')
 
 
 // The four basic active: creat new, read, update and delete:
@@ -40,6 +41,7 @@ exports.register = async data => {
     const token = createToken(user._id)
     const updateUser = await update({ token: token }, user._id)
     updateUser.token = token
+    await creatrExempailTest(user)
     return updateUser
 }
 

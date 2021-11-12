@@ -165,9 +165,10 @@ module.exports = function Router(server){
     server.post('/get_test', async (req, res) => {
         try {
             const token = req.headers.authorization
-            const id_test = req.body.id
+            const idTest = req.body.idTest
+            const idUser = req.body.idUser
             if (!token) throw 'The user not login'
-            const test = await getFullTest(id_test ,token)
+            const test = await getFullTest(idTest ,token, idUser)
             res.send(test)
         } catch (error) {
             res.status(400).send({error: error.message + error.stack || error})

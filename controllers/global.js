@@ -81,14 +81,19 @@ async function testScores(idTest) {
 }
 
 
-async function getFullTest(_idTest, token) {
+async function getFullTest(_idTest, token, idUser) {
     // Ceack if the token correct and if the user exist:
-    const user = await checkToken(token)
+    let user
+    if (idUser) {
+        user = await UserController.readOne({"_id": idUser})
+    }
+    else  user = await checkToken(token)
+   
     // Find the test and cheack if the test exist:
     const test = await TestController.readOne({_id: _idTest, active: true})
     if (!test || !test.active) throw 'The test not exist or deleted'
     // If the user is the creator:
-    if (user._id == test.creator) {
+    if (user._id == test.creator && !idUser) {
         const testView = await TestModel.findOne({_id: _idTest, active: true})
         .populate('creator')
         testView._doc.endDate =  Date.now() + test.timeForTest
@@ -102,7 +107,12 @@ async function getFullTest(_idTest, token) {
     if (!testDetails) {// No, TestDetails dosen't exist:
         console.log('Test details not exist, line 85');
         // Cheack if the test to shared for everyone from link:
-        if (!test.shared) throw 'The test accessible to order holders only'
+        if (!test.toShared) {
+            const toConnect = await UserController.readOne({"_id": test.creator})
+            throw `The test accessible to order holders only. Connect:\n${toConnect.email}\n${toConnect.name.first}  ${toConnect.name.last}`
+        }
+                
+        
         else { // The test open for everyone:
             // Create a new test details for the user:
             const newTestDetails = await createTestDeatelsForLink(user._id, _idTest, test.timeForTest)
@@ -298,8 +308,9 @@ async function getTestForm(token, idTest) {
     // Ceack if the token correct and if the user exist:
     const user = await checkToken(token)
     const test = await TestController.readOne({ _id: idTest})
+    console.log(test);
+    if (!test?.active) throw 'המבחן נמחק מהמערכת'
     if (test.creator != user._id) throw 'למשתמש אין הרשאת עריכה למבחן'
-    if (!test.active) throw 'המבחן נמחק מהמערכת'
     const questions = await QuestionController.read({test: idTest}, true)
     test._doc.questions = questions
     return test
@@ -315,7 +326,7 @@ async function editTest(token, idTest, newData) {
     const test = await TestController.readOne({ _id: idTest, active: true })
     if(!test) throw 'המבחן לא קיים במערכת'
     if (user._id != test.creator) throw 'למשתמש אין הרשאת עריכה'
-    let { title, description, deadline, active, shared, status } = newData
+    let { title, description, deadline, active, toShared, status } = newData
     switch (test.status) {
         case 'Edited':
         case 'Distributed':
@@ -324,7 +335,7 @@ async function editTest(token, idTest, newData) {
 
         case 'Started':
             // Creat an Array with objectes of all the property i want the be editable:
-            const started_editable = [{ title: title }, { description: description }, { deadline: deadline }, { active: active }, { shared: shared }]
+            const started_editable = [{ title: title }, { description: description }, { deadline: deadline }, { active: active }, { toShared: toShared }]
             // Filter all the property they are ton come from the newData (they 'undefind'):
             const toUpdate_started = started_editable.filter(property => { return Object.values(property)[0] != undefined })
             // Creat one Object with all the properties they user want to change, and they editable:
@@ -484,13 +495,13 @@ async function editQuestion(token, idQuestion, newData) {
                 if (!newData.answer._id) throw 'לא ניתן להוסיף שאלה מכיוון שיש אנשים שהתחילו להשיב על המבחן'
                 // If the user want to edit answer: 
                 else if (newData.answer._id) {
-                console.log(newData.answer);
                 const upDateQuestion = await QuestionModel.findOneAndUpdate(
                     { _id: idQuestion, answers: { $elemMatch: { _id: newData.answer._id } } },
                     {
-                        $set: {
+                        $set: 
+                        {
                             'answers.$.text': newData.answer.text,
-                            'answers.$.correct': newData.answer.correct
+                            // 'answers.$.correct': newData.answer.correct
                         }
                     },
                     { 'new': true }

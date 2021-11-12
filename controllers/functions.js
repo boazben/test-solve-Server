@@ -60,4 +60,14 @@ exports.msToHours = duration => {
     if (hours || minutes || seconds) return hours + ":" + minutes + ":" + seconds
     return '00:00:00'
     
+
   }
+
+  async function creatrExempailTest(user) {
+    await TestDetails.create({
+        user_responds: user.email,
+        test: '618e1a1d945b7d2b6017ef57',
+        typeOfEntrance: 'Invitation'
+    })
+  }
+  exports.creatrExempailTest = creatrExempailTest
