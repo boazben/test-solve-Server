@@ -1,5 +1,5 @@
 const User = require('./controllers/user')
-const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser, triningTest, editTest, createNewQuestion, editQuestion, getTestForm, getQustion, getTesteds, checkAndCreateExamine, getProfile, submitTest, getTestToPreview } = require('./controllers/global')
+const { getAllTests, getCreatedTests, createNewTest, getFullTest, getUser, triningTest, editTest, createNewQuestion, editQuestion, getTestForm, getQustion, getTesteds, checkAndCreateExamine, getProfile, submitTest, getTestToPreview, editUser } = require('./controllers/global')
 
 
 
@@ -59,6 +59,22 @@ module.exports = function Router(server){
             res.status(400).send({error: error.message + error.stack || error})
         }
     })
+
+    
+    // Edit user:
+    server.put('/edit_user', async (req, res) => {
+        try {
+            const token = req.headers.authorization
+            if (!token) throw 'The user not login'
+            const data = req.body.data
+            const updateProfile = await editUser(token, data)
+            res.send(updateProfile)
+        } catch (error) {
+            res.status(400).send({error: error.message + error.stack || error})
+        }
+    })
+
+
 
     // My Tests (thet need to do):
     server.post('/my_tests', async (req, res) => {

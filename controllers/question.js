@@ -24,7 +24,6 @@ async function read(filter, correct=false) {
     const filterQuestions = questions.map(question => {
         const filterAnswers = question.answers.filter(answer => answer.active)
         question.answers = filterAnswers
-        console.log(question)
         return question
     })
 

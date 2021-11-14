@@ -13,7 +13,7 @@ const User = new Schema({
     token: { type: String, select: false },
     lastSee: { type: Date, default: Date.now(), transform: v => v?.getTime()},
     created: { type: Date, default: Date.now(), transform: v => v?.getTime()},
-    profilePicture: { type: String }
+    profilePicture: { data: Buffer, contentType: String }   
 });
 
 User.virtual('fullName').get(function() {return `${this.name.first} ${this.name.last}`})

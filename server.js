@@ -4,10 +4,12 @@ const cors = require('cors')
 const { connect } = require('./db');
 const Router = require('./router');
 const server = express()
+// const bodyParser = require('body-parser')
 
 server.use(express.static('public'))
-server.use('*', express.static('public')) // TODO- cheack if it's hear
-server.use(express.json())
+server.use('*', express.static('public')) // TODO- cheack if it's here
+server.use(express.json({limit: '1mb'}))
+server.use(express.urlencoded({limit: '1mb'}))
 server.use(cors())
 
  

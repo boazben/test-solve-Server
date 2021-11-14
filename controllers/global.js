@@ -21,10 +21,18 @@ async function triningTest(_idTest) {
 }
 exports.triningTest = triningTest
 
+// Edit user:
+async function editUser(token, data) {
+    const user = await checkToken(token)
+    const updateUser = await UserController.update(data, user._id)
+    return updateUser
+}
+exports.editUser = editUser
+
+
 
 
 async function getTesteds(idTest, token) {
-    console.log(idTest);
     const user = await checkToken(token)
     const test =  await TestController.readOne({"_id": idTest})
     if (!test) throw 'המבחן לא נמצא במערכת'
@@ -33,7 +41,6 @@ async function getTesteds(idTest, token) {
     for (let tested of testeds) {
         const response = await UserController.readOne({"email": tested.user_responds})
         if (response) {tested._doc.user_responds = response}
-        console.log(tested); 
     }
     return testeds
 }
@@ -105,7 +112,6 @@ async function getFullTest(_idTest, token, idUser) {
     const testDetails = await TestDetails.readOne({ test: _idTest, user_responds: user.email})
     // Cheack if exist test TestDetails:
     if (!testDetails) {// No, TestDetails dosen't exist:
-        console.log('Test details not exist, line 85');
         // Cheack if the test to shared for everyone from link:
         if (!test.toShared) {
             const toConnect = await UserController.readOne({"_id": test.creator})
@@ -141,8 +147,6 @@ async function getFullTest(_idTest, token, idUser) {
         // Cheack if exist "end Date", so the meaning is the user start the test:
         if (!testDetails.endDate) {
             const justForNow = await TestDetails.update(testDetails._id, { status: 'In Doing', startDate: new Date(), endDate: (new Date().getTime() + test.timeForTest) })
-            console.log('Test details exist and update, line 114');
-            console.log(justForNow);
         } // Craate time to end the test.
         // Cheacke if the end Date of test passed:
         if ( new Date(testDetails.endDate).getTime() < Date.now()) {// The time of the test passed over:x
@@ -154,14 +158,12 @@ async function getFullTest(_idTest, token, idUser) {
         } else { // The time of the test still dont passed:
             // Cheacked if the deadline passed:
             if ((test.deadline ? new Date(test.deadline).getTime() : Infinity) < Date.now()) {// The deadline passed:
-                console.log('The deadline passed, line 123');
                 await TestController.update(_idTest, { status: 'Closed' })
                 await TestDetails.update(testDetails._id, { status: 'Closed' })
                 // Reuturn the test to presentation:
                 return createObjectOfTest(testDetails)
             } else { // The dedline dosen't passed:
                 // Reuturn the test to presentation:
-                console.log("The deadline dosen't passed, line 130");
                 return createObjectOfTest(testDetails)
             }
 
@@ -199,9 +201,7 @@ async function submitTest(idTestPlacement, answersObj, token) {
     await questions.map(question => { 
         questionScore(question, answersObj).
         then((score) => { 
-            console.log('grade befor:', grade);
             grade = grade + score
-            console.log('grade after:', grade);
         })
        
     })
@@ -222,8 +222,6 @@ async function submitTest(idTestPlacement, answersObj, token) {
 exports.submitTest = submitTest
 
 async function questionScore(question, responses) {
-    console.log(question);
-    console.log(responses);
     let questionGrade = 0
         const ansAmount = question.answers.length
         const correctAnsAmount = question.answers.filter(answer => answer.correct).length
@@ -308,7 +306,6 @@ async function getTestForm(token, idTest) {
     // Ceack if the token correct and if the user exist:
     const user = await checkToken(token)
     const test = await TestController.readOne({ _id: idTest})
-    console.log(test);
     if (!test?.active) throw 'המבחן נמחק מהמערכת'
     if (test.creator != user._id) throw 'למשתמש אין הרשאת עריכה למבחן'
     const questions = await QuestionController.read({test: idTest}, true)

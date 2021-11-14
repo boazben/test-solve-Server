@@ -1,6 +1,6 @@
 const Test = require('../models/test')
 const jwt = require('jsonwebtoken')
-const { msToHours } = require('./functions')
+// const { msToHours } = require('./functions')
 
 async function create(data) {
     return await Test.create(data)

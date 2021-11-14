@@ -47,21 +47,21 @@ async function createObjectOfTest(testDetails_id, answersCorecct=false) {
 }
 exports.createObjectOfTest = createObjectOfTest
 
-exports.msToHours = duration => {
+// exports.msToHours = duration => {
 
-      seconds = Math.floor((duration / 1000) % 60),
-      minutes = Math.floor((duration / (1000 * 60)) % 60),
-      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+//       seconds = Math.floor((duration / 1000) % 60),
+//       minutes = Math.floor((duration / (1000 * 60)) % 60),
+//       hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
   
-    hours = (hours < 10) ? "0" + hours : hours;
-    minutes = (minutes < 10) ? "0" + minutes : minutes;
-    seconds = (seconds < 10) ? "0" + seconds : seconds;
+//     hours = (hours < 10) ? "0" + hours : hours;
+//     minutes = (minutes < 10) ? "0" + minutes : minutes;
+//     seconds = (seconds < 10) ? "0" + seconds : seconds;
     
-    if (hours || minutes || seconds) return hours + ":" + minutes + ":" + seconds
-    return '00:00:00'
+//     if (hours || minutes || seconds) return hours + ":" + minutes + ":" + seconds
+//     return '00:00:00'
     
 
-  }
+//   }
 
   async function creatrExempailTest(user) {
     await TestDetails.create({
