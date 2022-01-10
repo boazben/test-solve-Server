@@ -9,7 +9,7 @@ const server = express()
 server.use(express.static('public'))
 server.use('*', express.static('public')) // TODO- cheack if it's here
 server.use(express.json({limit: '1mb'}))
-server.use(express.urlencoded({limit: '1mb'}))
+// server.use(express.urlencoded({limit: '1mb'}))
 server.use(cors())
 
  
